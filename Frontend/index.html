@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Makes the layout scale correctly on other devices. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ad-free physics website: N-Body gravity, quantum tunneling, and electromagnetic induction.">
+    <title>Physics made Interactive!</title>
+
+    <!-- Link to the css stylesheet. -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Navigation bar -->
+    <header class="site-header">
+        <nav class="navbar" aria-label="Main navigation">
+            <a href="#home" class="navbar__brand" data-nav="home">Physics made Interactive!</a>
+
+            <!-- Hamburger button that is only visible on small screens. -->
+            <button class="navbar__toggle" id="nav-toggle"
+                    aria-label="Toggle navigation menu"
+                    aria-expanded="false"
+                    aria-controls="nav-links">
+                <span class="navbar__toggle-bar"></span>
+                <span class="navbar__toggle-bar"></span>
+                <span class="navbar__toggle-bar"></span>
+            </button>
+
+            <ul class="navbar__links" id="nav-links">
+                <li><a href="#home" data-nav="home" class="active">Home</a></li>
+                <li><a href="#nbody" data-nav="nbody">N-Body Simulation</a></li>
+                <li><a href="#tunneling" data-nav="tunneling">Quantum Tunnelling</a></li>
+                <li><a href="#induction" data-nav="induction">Electromagnetic Induction</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="site-main">
+
+        <!--HOME-->
+        <section id="home" class="page active" aria-labelledby="home-title">
+            <div class="hero">
+                <h1 id="home-title"><span class="word-red">Physics</span> <span class="word-purple">made</span> <span class="word-blue">Interactive!</span></h1>
+                <p>This is a physics website. In order to experience the more intricate parts of physics and see them visually in order to understand them, each module contains a simulation that's interactive, completely free to use, and ad-free. It also has analogies and explanations for those who are more interested in the topics, which will help people to understand and get interested in physics (because physics is more than simply a block sliding down a ramp or a ball falling from a mountain). It's a lot more, such as quantum tunneling or electromagnetic induction, which are two of the modules here. The site is also open source, so we will eventually take on new topics as modules. Stay tuned in order to see them.</p>
+            </div>
+        </section>
+
+        <!-- N-BODY (content tba) -->
+        <section id="nbody" class="page" aria-label="N-Body Simulation">
+            <div class="placeholder-box">Simulation coming soon.</div>
+            <button class="btn btn--ghost" data-goto="home">Back to home</button>
+        </section>
+
+        <!-- Quantum Tunneling (content tba) -->
+        <section id="tunneling" class="page" aria-label="Quantum Tunnelling">
+            <div class="placeholder-box">Simulation coming soon.</div>
+            <button class="btn btn--ghost" data-goto="home">Back to home</button>
+        </section>
+
+        <!-- Electromagnetic Induction (content tba) -->
+        <section id="induction" class="page" aria-label="Electromagnetic Induction">
+            <div class="placeholder-box">Simulation coming soon.</div>
+            <button class="btn btn--ghost" data-goto="home">Back to home</button>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <p>Personal project by Hrishik Shah. Ad-free and open source.</p>
+    </footer>
+
+    <!-- Script loaded last so the DOM exists. "defer" keeps it non-blocking. -->
+    <script src="js/main.js" defer></script>
+</body>
+</html>

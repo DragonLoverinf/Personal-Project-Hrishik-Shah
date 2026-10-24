@@ -1,0 +1,251 @@
+/* Colours and sizes used across the whole site. Change them here. */
+:root {
+    /* Backgrounds, black. */
+    --bg: #000000;
+    --surface: #0d0d0d;
+    --border: #2a2a2a;
+
+    /* Text colours, bright enough to read on the dark backgrounds. */
+    --text: #f5f5f5;
+    --text-muted: #a8a8a8;
+
+    /* Pastel colours. */
+    --pastel-blue: #8ab4ff;
+    --pastel-purple: #c3a6ff;
+    --pastel-red: #ff8a9b;
+
+    --radius: 0;
+    --gap: 1.25rem;
+    --nav-height: 64px;
+    --max-width: 1100px;
+}
+
+/* Makes padding and borders count inside the width of every element. */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    /* Flexbox column keeps the footer at the bottom of the screen. */
+    display: flex;
+    flex-direction: column;
+    font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--text);
+    line-height: 1.6;
+    background: var(--bg);
+}
+
+h1, h2 { line-height: 1.05; margin-top: 0; font-weight: 700; letter-spacing: -0.02em; }
+a { color: var(--pastel-blue); text-decoration: none; }
+
+/* Main content area. */
+.site-main {
+    /* Takes up the space between the header and the footer. */
+    flex: 1;
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.site-footer {
+    text-align: center;
+    padding: 1rem;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    font-size: 0.9rem;
+}
+
+/* Only the page with the active class is shown, main.js switches it. */
+.page { display: none; }
+.page.active { display: block; }
+
+#nbody .placeholder-box { border-color: var(--pastel-red); }
+#tunneling .placeholder-box { border-color: var(--pastel-blue); }
+#induction .placeholder-box { border-color: var(--pastel-purple); }
+
+/* Navigation bar */
+.site-header {
+    /* Stays at the top of the screen while scrolling. */
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+}
+
+.navbar {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    min-height: var(--nav-height);
+    padding: 0 1rem;
+    /* Flexbox puts the name on the left and the links on the right. */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.navbar__brand {
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--text);
+}
+
+.navbar__links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 0.35rem;
+}
+
+.navbar__links a {
+    display: block;
+    padding: 0.5rem 0.9rem;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Purple when hovering over a link. */
+.navbar__links a:hover {
+    color: var(--pastel-purple);
+    border-color: var(--pastel-purple);
+}
+
+/* Blue on the current page. */
+.navbar__links a.active {
+    color: var(--pastel-blue);
+    border-color: var(--pastel-blue);
+}
+
+/* Hamburger button is hidden on large screens. */
+.navbar__toggle {
+    display: none;
+    background: none;
+    border: 0;
+    padding: 0.5rem;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 5px;
+}
+.navbar__toggle-bar {
+    display: block;
+    width: 26px;
+    height: 3px;
+    background: var(--pastel-red);
+}
+
+/* Home page intro. */
+.hero { text-align: center; padding: 2.5rem 0; }
+
+.hero h1 {
+    /* Text size changes smoothly with the screen width. */
+    font-size: clamp(2.8rem, 9vw, 6rem);
+}
+
+.word-red { color: var(--pastel-red); }
+.word-purple { color: var(--pastel-purple); }
+.word-blue { color: var(--pastel-blue); }
+
+/* Long paragraph is left aligned and has a maximum width so it is easy to read. */
+.hero p {
+    max-width: 70ch;
+    margin: 1.5rem auto 0;
+    text-align: left;
+    color: var(--text-muted);
+    font-size: 1.15rem;
+}
+
+/* Grid of cards, fits as many 260px columns as the screen allows. */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--gap);
+}
+
+/* Each card has its own colour through the --c variable. */
+.card {
+    --c: var(--pastel-blue);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--c);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.75rem;
+    transition: border-color 0.2s ease;
+}
+.card:nth-child(3n + 2) { --c: var(--pastel-purple); }
+.card:nth-child(3n + 3) { --c: var(--pastel-red); }
+
+.card h2 { color: var(--c); }
+.card p { color: var(--text-muted); margin: 0; }
+
+/* Card border changes to its colour when hovering over it. */
+.card:hover { border-color: var(--c); }
+
+/* Empty box shown on the topic pages until the content is built. */
+.placeholder-box {
+    margin: 1.5rem 0;
+    padding: 4rem 1rem;
+    text-align: center;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 2px solid var(--pastel-purple);
+}
+
+/* Buttons have a pastel outline that fills in when hovering. */
+.btn {
+    --c: var(--pastel-blue);
+    align-self: flex-start;
+    padding: 0.55rem 1.3rem;
+    background: transparent;
+    color: var(--c);
+    border: 2px solid var(--c);
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+/* Buttons inside a card use the colour of that card. */
+.card .btn { --c: inherit; }
+
+.btn:hover {
+    background: var(--c);
+    color: var(--bg);
+}
+
+.btn--ghost { --c: var(--pastel-purple); }
+
+/* Clear outline when using the keyboard to move around. */
+.btn:focus-visible, .navbar__links a:focus-visible, .navbar__toggle:focus-visible {
+    outline: 3px solid var(--pastel-blue);
+    outline-offset: 3px;
+}
+
+/* Small screens, under 700px wide. */
+@media (max-width: 700px) {
+    .navbar__toggle { display: flex; }
+
+    /* Links hide in a dropdown that main.js opens by adding the open class. */
+    .navbar__links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        padding-bottom: 0.75rem;
+    }
+    .navbar__links.open { display: flex; }
+}
+
+/* Turns off the movement for people who prefer less animation. */
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .card, .btn, .navbar__links a { transition: none; }
+}
