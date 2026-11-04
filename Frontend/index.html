@@ -46,31 +46,251 @@
             </div>
         </section>
 
-        <!-- N-BODY (content tba) -->
-        <section id="nbody" class="page" aria-label="N-Body Simulation">
-            <div class="placeholder-box">Simulation coming soon.</div>
-            <button class="btn btn--ghost" data-goto="home">Back to home</button>
+        <!-- N-BODY -->
+        <section id="nbody" class="page" aria-labelledby="nbody-title">
+
+            <!-- Simulation stays pinned while the text scrolls over it. -->
+            <div class="sim-pin">
+                <h1 id="nbody-title">N-Body Simulation</h1>
+                <p class="tagline">The age old problem of having more than 2 celestial bodies result in a chaotic mess simply because gravity says so</p>
+
+                <div class="sim-layout">
+                    <!-- p5.js puts the canvas in here. -->
+                    <div class="sim-canvas" id="nbody-holder"></div>
+
+                    <div class="sim-controls">
+                        <div class="button-row">
+                            <button class="btn" id="nbody-play">Play</button>
+                            <button class="btn btn--ghost" id="nbody-reset">Reset</button>
+                        </div>
+
+                        <label for="nbody-count">Number of bodies: <output id="nbody-count-out">3</output></label>
+                        <input type="range" id="nbody-count" min="2" max="5" step="1" value="3">
+
+                        <label for="nbody-mass">Mass: <output id="nbody-mass-out">1.0</output></label>
+                        <input type="range" id="nbody-mass" min="0.5" max="3" step="0.1" value="1">
+
+                        <label for="nbody-speed">Speed: <output id="nbody-speed-out">2</output></label>
+                        <input type="range" id="nbody-speed" min="1" max="10" step="1" value="2">
+
+                        <label class="check"><input type="checkbox" id="nbody-trails" checked> Show trails</label>
+                        <label class="check"><input type="checkbox" id="nbody-energy"> Show energy</label>
+
+                        <!-- Only visible when Show energy is ticked. -->
+                        <div class="readout" id="nbody-energy-box" hidden>
+                            <p>Kinetic: <span id="nbody-ke">0</span></p>
+                            <p>Potential: <span id="nbody-pe">0</span></p>
+                            <p>Total: <span id="nbody-te">0</span></p>
+                        </div>
+
+                        <p class="readout" id="nbody-status" hidden></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Text slides up over the simulation. -->
+            <div class="story">
+                <h2>The Analogy</h2>
+                <p>Imagine you had a group of people pulling each other around. When its just 2 people, its quite simple, whoever is pulling harder will cause the other person to move in their direction. However, when you add more people, say 3, and everyone is pulling on each other, its a lot harder to predict, because when you have 2 people, they pull each other by a certain amount, and the stronger person causes the movement, but when you have 3 or more people, one person pulling on person 2 causes person 2 to move slightly which means that their pull on person 1 and 3 changes, and this repeats for each person. This makes the situation extremely chaotic to track, hence it is classified as a “chaotic system” (for most situations where N, or the number of people, is 3 or more).</p>
+
+                <h2>The Science</h2>
+                <p>In scientific terms, the people are celestial objects, like a planet or a star, and the pulling is gravitational force. Since gravity mainly depends upon distance and the mass of an object, atleast in classical interpretations, when 1 planet pulls the other, the distance changes, which changes the gravity on the third planet as well as the first planet, causing chaos. This chaos was proven by a man named Henri Poincaré, who said that there could be no general closed-form analytical solution for it, basically that there was no single equation that could fully predict the motion of an N-body problem for 3 or more celestial objects, atleast with most cases. The system is very reliant on the starting conditions, and hence any small change in starting conditions snowballs into a much larger error, meaning that seemingly identical starting conditions can lead to completely different outcomes, even with a few millimeters of error. While the outcome would be the same if the starting conditions are exact, even small errors lead to large deviations.</p>
+
+                <h2>Solving It</h2>
+                <p>However, there is a way to solve this, atleast kind of. It is a process known as numerical integration, where you break down time into every small chunk and run the simple gravity formula for each of those small chunks of time and piece them together, which would result in an understanding of the motion of all the bodies.</p>
+
+                <h2>Why It Is Not Perfect</h2>
+                <p>However, this is also not fully accurate for 2 main reasons. As humans, we cannot solve these fully due to the amount of time required, hence we use machines, however machines round numbers to a certain point meaning there will always be a level of inaccuracy present in any computational model, especially when you consider that the only way to have full accuracy would be to take a chunk of time that is practically equal to zero (though not fully zero, think 0.0000000000000000001 but smaller), since that ensures that nothing gets missed from the time steps, but neither machines nor humans can do so many calculations, hence we often use smaller time steps. Also, the N-body problem, in most common setups, relies on Newton’s model of gravity, however we have a more advanced model of gravity called General Relativity, which Einstein made. We know that General Relativity is more accurate than Newton’s gravity, but we don’t know if either is fully true, so we could potentially be missing the true model completely.</p>
+
+                <h2>For the Curious</h2>
+                <p class="warning">(Not necessary to understand, only for the curious, be warned, it is extremely difficult to understand)</p>
+                <p>The model described here is built on Newton’s model of gravity, since it is far simpler to understand, relying purely on Newton’s inverse square law, which states that:</p>
+                <p class="equation">F = G <span class="frac"><span>m₁m₂</span><span>r²</span></span></p>
+                <p>To understand what this equation means:</p>
+                <ul>
+                    <li>F is the final gravitational pulling force between the two objects.</li>
+                    <li>G is just a fixed baseline number called the gravitational constant.</li>
+                    <li>m₁ and m₂ are the physical masses (weights) of the two different planets multiplied together.</li>
+                    <li>r² is the physical distance between the two planets multiplied by itself (squared).</li>
+                </ul>
+                <p>Because distance (r²) is on the bottom of the fraction, it means that if planets get even a little bit closer, the pulling force (F) shoots up drastically. This formula is run for every single connection between every single planet to do the numerical integration method, and the calculated force is then used to track the change in position for each planet.</p>
+                <p class="equation">a<sub>i</sub> = Σ<sub>j≠i</sub> G m<sub>j</sub> <span class="frac"><span>r<sub>j</sub> − r<sub>i</sub></span><span>|r<sub>j</sub> − r<sub>i</sub>|³</span></span></p>
+                <p class="equation">r(t + Δt) = r(t) + v(t)Δt + ½ a(t)Δt²</p>
+                <p class="equation">v(t + Δt) = v(t) + ½ [a(t) + a(t + Δt)] Δt</p>
+
+                <button class="btn btn--ghost" data-goto="home">Back to home</button>
+            </div>
         </section>
 
-        <!-- Quantum Tunneling (content tba) -->
-        <section id="tunneling" class="page" aria-label="Quantum Tunnelling">
-            <div class="placeholder-box">Simulation coming soon.</div>
-            <button class="btn btn--ghost" data-goto="home">Back to home</button>
+        <!-- QUANTUM TUNNELLING -->
+        <section id="tunneling" class="page" aria-labelledby="tunneling-title">
+
+            <!-- Simulation stays pinned while the text scrolls over it. -->
+            <div class="sim-pin">
+                <h1 id="tunneling-title">Quantum Tunnelling</h1>
+                <p class="tagline">When the ball goes through the wall, because it decides "I don't want to stop" and the wall apparently lets that happen.</p>
+
+                <div class="sim-layout">
+                    <!-- p5.js puts the canvas in here. -->
+                    <div class="sim-canvas" id="tunnel-holder"></div>
+
+                    <div class="sim-controls">
+                        <label for="tunnel-energy">Energy (E): <output id="tunnel-energy-out">3.0</output></label>
+                        <input type="range" id="tunnel-energy" min="0.5" max="10" step="0.1" value="3">
+
+                        <label for="tunnel-height">Barrier height (V₀): <output id="tunnel-height-out">5.0</output></label>
+                        <input type="range" id="tunnel-height" min="0.5" max="10" step="0.1" value="5">
+
+                        <label for="tunnel-width">Barrier width (L): <output id="tunnel-width-out">1.0</output></label>
+                        <input type="range" id="tunnel-width" min="0.1" max="3" step="0.1" value="1">
+
+                        <p class="readout" id="tunnel-result">T = 0.0000, R = 0.0000</p>
+
+                        <div class="button-row">
+                            <button class="btn" id="tunnel-fire">Fire particle</button>
+                            <button class="btn" id="tunnel-fire-many">Fire 100 particles</button>
+                            <button class="btn btn--ghost" id="tunnel-reset">Reset</button>
+                        </div>
+
+                        <div class="readout">
+                            <p>Transmitted: <span id="tunnel-passed">0</span></p>
+                            <p>Reflected: <span id="tunnel-bounced">0</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Text slides up over the simulation. -->
+            <div class="story">
+                <h2>The Analogy</h2>
+                <p>Imagine throwing a tennis ball at a brick wall. No matter what you do, it'll bounce back. It won't pass through the wall because the wall is solid, and the ball can't smash through the wall, and the ball is also solid. Now imagine the ball was actually a ghost. Most of the time, it does bounce back, but every so often, because it's a ghost, part of it goes straight through the wall and goes to the other side without ever leaving a hole. That's the strange part about quantum tunneling. It's not the ball breaking the wall or climbing over it. It just slips through the wall like a ghost.</p>
+
+                <h2>The Science</h2>
+                <p>In scientific terms, a quantum particle like an electron isn't actually a solid little ball. It is a fundamental piece of matter that acts like a wave of probability. Imagine a cloud, but with all of the molecules being a potential chance of the electron being there, which is described by Schrödinger's equations (named after the guy who famously called a cat both alive and dead). A quantum particle doesn't have a brain, so it doesn't "decide" to phase through a wall. Instead, because it naturally behaves like a spread-out wave, it cannot be stopped perfectly on a dime.</p>
+
+                <h2>Through the Wall</h2>
+                <p>When this probability wave meets an energy barrier it doesn't have enough energy to climb over, the wave doesn't just stop instantly at the front of the wall. Instead, the wave bleeds into the barrier, decaying exponentially (fading out incredibly fast) inside the wall. This fading piece inside the wall behaves like a dying ripple. If the barrier isn't too thick, the wave hasn't fully faded to zero by the time it reaches the other side. Because a tiny bit of the wave survives and peeks out on the other side, there is a real, calculable probability of finding the actual particle behind the wall, even though it never had enough energy to get there classically.</p>
+
+                <h2>Where It Comes From</h2>
+                <p>It was first worked out around 1927 and 1928, and George Gamow used it to explain why radioactive atoms undergo alpha decay. We can get this match by solving Schrödinger's wave equation separately in three regions: before the barrier, inside the barrier, and after it. We force the wave function and its slope to match smoothly at each boundary, giving the exact formula for the probability of transmitting to the other side, which depends on the particle's energy, the barrier's height, and the barrier's width.</p>
+
+                <h2>The Limits</h2>
+                <p>There are some limits. For example, it's a one-dimensional, idealized barrier. Real barriers are usually varying, not sharp-walled and not perfectly flat, and are handled with a different technique, which is called the WKB approximation (this is just a math shortcut for bumpy walls, so don’t worry about it). Also, we take the particle as a single non-relativistic, spinless entity with no interactions with anything else. This means we act as if it moves much slower than the speed of light, so we ignore Einstein's theory of relativity and use Newtonian physics. It also means that it doesn't have any spin, which is another quantum behavior that many particles have.</p>
+
+                <h2>Why It Is Random</h2>
+                <p>Another thing you may notice is that for some reason, under the exact same conditions, sometimes the particle is reflected back, and sometimes it ends up on the other side. This is because quantum tunneling is to our knowledge non-deterministic, meaning the physical universe at this scale relies fundamentally on probability, not just single tracking outcomes. Additionally, the model treats the particle as a wave as an effort to model the particle’s movement, while also adhering to the wave function (which transforms the exact location of the particle into a range of possible locations that ripples like a wave, since the particle's location is probabilistic).</p>
+
+                <h2>Reading the Simulation</h2>
+                <p>When you see some part of the wave reflecting and some part going through the wall, this represents the probability splitting—meaning there is a partial percentage chance of the particle ending up behind the wall, and a remaining percentage chance that it just reflects back. Finally, we can observe the energy of the particle based on its rate of oscillating (going down and up), with more of those oscillations in a shorter time meaning the particle has higher energy. The model uses that oscillation speed to tell the energy level, and uses the height (amplitude) of the wave to show which side has the higher percentage chance of the particle actually appearing when we look at it.</p>
+
+                <h2>For the Curious</h2>
+                <p class="warning">(Not necessary to understand, only for the curious, be warned, it is extremely difficult to understand)</p>
+                <p class="equation">E &lt; V₀: κ = √(2m(V₀ − E)) / ħ, T = 1 / (1 + <span class="frac"><span>V₀² sinh²(κL)</span><span>4E(V₀ − E)</span></span>)</p>
+                <p class="equation">E &gt; V₀: k₂ = √(2m(E − V₀)) / ħ, T = 1 / (1 + <span class="frac"><span>V₀² sin²(k₂L)</span><span>4E(E − V₀)</span></span>)</p>
+                <p class="equation">E = V₀: T = 1 / (1 + <span class="frac"><span>mV₀L²</span><span>2ħ²</span></span>)</p>
+                <p class="equation">R = 1 − T</p>
+
+                <button class="btn btn--ghost" data-goto="home">Back to home</button>
+            </div>
         </section>
 
-        <!-- Electromagnetic Induction (content tba) -->
-        <section id="induction" class="page" aria-label="Electromagnetic Induction">
-            <div class="placeholder-box">Simulation coming soon.</div>
-            <button class="btn btn--ghost" data-goto="home">Back to home</button>
+        <!-- ELECTROMAGNETIC INDUCTION -->
+        <section id="induction" class="page" aria-labelledby="induction-title">
+
+            <!-- Simulation stays pinned while the text scrolls over it. -->
+            <div class="sim-pin">
+                <h1 id="induction-title">Electromagnetic Induction</h1>
+                <p class="tagline">Because for some reason, the magnetic field decides to make electricity</p>
+
+                <div class="sim-layout">
+                    <!-- p5.js puts the canvas in here. -->
+                    <div class="sim-canvas" id="induction-holder"></div>
+
+                    <div class="sim-controls">
+                        <div class="button-row">
+                            <button class="btn" id="induction-play">Play</button>
+                            <button class="btn btn--ghost" id="induction-reset">Reset</button>
+                        </div>
+
+                        <label for="induction-field">Field strength (Bmax): <output id="induction-field-out">1.5</output></label>
+                        <input type="range" id="induction-field" min="0.5" max="3" step="0.1" value="1.5">
+
+                        <label for="induction-turns">Coil turns (N): <output id="induction-turns-out">4</output></label>
+                        <input type="range" id="induction-turns" min="1" max="10" step="1" value="4">
+
+                        <label class="check"><input type="checkbox" id="induction-graph"> Show EMF graph</label>
+
+                        <!-- Only visible when Show EMF graph is ticked. -->
+                        <p class="readout" id="induction-graph-note" hidden>This is a graph that shows the Electricity that is being generated as time passes</p>
+
+                        <div class="readout">
+                            <p>Phase A EMF: <span id="induction-a">0.00</span></p>
+                            <p>Phase B EMF: <span id="induction-b">0.00</span></p>
+                            <p>Phase C EMF: <span id="induction-c">0.00</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Text slides up over the simulation. -->
+            <div class="story">
+                <h2>The Analogy</h2>
+                <p>We've all heard of electricity, but have you ever wondered how it's actually generated? That's what electromagnetic induction does: it creates electricity.</p>
+                <p>Let’s start with a new analogy. Think of a copper wire as a pipe packed completely full of loose marbles (which are electrons, or tiny electric charges). Now, think of a magnetic field like an invisible magnetic wind.</p>
+                <ul>
+                    <li>If you hold a magnet completely still next to the wire, nothing happens. The magnetic wind isn't moving, so the marbles stay parked.</li>
+                    <li>If you suddenly plunge a magnet toward the wire, the movement of the magnetic field acts like a sudden gust of wind that physically pushes the marbles forward through the pipe.</li>
+                    <li>If you move the magnet slowly, the magnetic wind gently nudges the marbles a little bit. If you slam the magnet down quickly, the rapid shift in the magnetic environment creates a massive, powerful push that sends the marbles flying fast.</li>
+                </ul>
+                <p>Here, the flowing stream of marbles is our electric current, and how fast you move the magnet represents the rate of change in the magnetic field. The faster you change the magnetic field around a wire, the more electricity you actually generate. When you make electricity move through a spiral loop of wire, that moving charge inside the loop actually creates its own brand new magnetic field around the spiral.</p>
+
+                <h2>Faraday and Lenz</h2>
+                <p>We use this exact technology in order to generate electricity. A man named Michael Faraday, in 1831, showed that by changing magnetic flux (which is just the total amount of magnetic field lines passing through a loop), we're able to induce a voltage called EMF. Heinrich Lenz, a few years later, said that the induced current flows in a specific direction that magnetically opposes the change causing it, which just shows up as a minus sign in the equations.</p>
+                <p>To understand magnetic flux clearly, imagine a magnet shining its magnetic field lines onto a flat metal window: the surface area of the window multiplied by the pure strength of the magnetic field gives you the magnetic flux. Thus, to change the flux and create electricity, you either have to change the size of the window, or you have to change the strength of the magnetic field passing through it.</p>
+
+                <h2>The Spinning Magnet</h2>
+                <p>So now, imagine you have a magnet attached to a rod. When you spin the magnet, you are constantly changing the angle and amount of magnetic field lines hitting the surrounding metal. This generates an electromotive force, or EMF voltage, inside the metal, which acts like an electrical pressure pushing the electrons. What we do to generate electricity on a massive scale is use natural resources like wind or water to physically rotate that metal rod.</p>
+                <p>The metal rod is surrounded by three separate coils of wire that are spaced 120° apart. When the magnet rotates, you'll see that the first coil has a current generated in it because its magnetic flux is actively changing, then coil 2 experiences it, then coil 3. That means all three coils are generating electricity, perfectly out of phase (staggered in time) with each other. We use three for a very specific reason, and that reason is to optimize the production of energy.</p>
+
+                <h2>Why Three Coils</h2>
+                <p>To understand, we need to understand what exactly current is. Current is basically just moving charge, which is electrons moving. There are two main ways electrons move: Direct Current (DC) and Alternating Current (AC). DC is like a one-way street where electrons only march forward in one direction, which is how batteries work. AC is like a fast-paced game of tug-of-war where electrons constantly shake back and forth rhythmically. In this spinning magnet system, the electrons flow back and forth, and this motion is what allows alternating current electricity to be generated.</p>
+                <p>Hence, when you have three coils at any point in time, the voltages all perfectly add up to zero. Say, at one point in time, coil 1 could have 1 V, and coils 2 and 3 would each have -0.5 V. These numbers add up to 0, but both positive and negative values still cause electricity because both of them force the electrons to move. What's important here is that since they add up to 0, we don't need to complete the circuit with an extra return wire for each individual coil. Meaning, we can just have the three main wires, with all three of them generating electricity cleanly. This mechanism is how wind power and hydropower work. We just use these resources to turn the magnet, which allows the coils to generate electricity. That electricity is supplied all over the world in the form of alternating current.</p>
+
+                <h2>The Minus Sign</h2>
+                <p>One interesting thing we can observe here is that the formula for the induced voltage will always have a negative sign because of that dude named Lenz. Lenz basically shows that, since the new electricity creates a magnetic field that opposes the original magnetic change causing it, it will show up as a minus sign. What this means in real life is that as the magnet is spinning to generate electricity, the moving electrons create their own secondary magnetic field that acts like an invisible magnetic brake, pushing against the magnet's rotation. Since we use external sources of energy like wind or water, they easily overpower this very tiny magnetic braking force and keep it turning.</p>
+
+                <h2>More Turns, More Power</h2>
+                <p>The exact electromotive force is equal to the voltage. The quantity is the negative of the number of turns in a coil times the change in the magnetic flux over a change in time. This means that the more turns you have in each of these coils, the more loops you have, and there is technically more electricity generated. Hence, we use lots of loops in these coils. The more you change the magnetic flux over time, the more electricity is generated. Hence, we try to use the water and wind to rotate the magnet faster, since that changes the flux quicker and generates more electricity.</p>
+
+                <h2>The Model</h2>
+                <p>The model that I showcase here is just an example of how a three-phase system would work. The magnet is being rotated by an external force, and that is causing electricity and a magnetic braking force to be generated. This is actually really interesting and useful because this is what powers almost everything. ACs, laptops, phones, everything in the world is usually being powered by electricity generated in this way, which is why it's so important to humans as a whole.</p>
+
+                <h2>For the Curious</h2>
+                <p class="warning">(Not necessary to understand, only for the curious, be warned, it is extremely difficult to understand)</p>
+                <p class="equation">Φ = B · A · cos(θ − φ)</p>
+                <p class="equation">EMF = −N <span class="frac"><span>dΦ</span><span>dt</span></span></p>
+                <p class="equation">φ = 0°, 120°, 240°</p>
+                <p class="equation">EMF<sub>A</sub> + EMF<sub>B</sub> + EMF<sub>C</sub> = 0</p>
+
+                <button class="btn btn--ghost" data-goto="home">Back to home</button>
+            </div>
         </section>
 
     </main>
 
     <footer class="site-footer">
-        <p>Personal project by Hrishik Shah. Ad-free and open source.</p>
+        <p>Personal project by Hrishik Shah (Ad-free and open source).</p>
     </footer>
 
-    <!-- Script loaded last so the DOM exists. "defer" keeps it non-blocking. -->
+    <!-- Scripts, loaded in this order. -->
+    <script src="js/p5.min.js" defer></script>
+    <script src="js/physics/NBody.js" defer></script>
+    <script src="js/physics/QTunnel.js" defer></script>
+    <script src="js/physics/EInduction.js" defer></script>
+    <script src="js/sketches/shared.js" defer></script>
+    <script src="js/sketches/nbodySketch.js" defer></script>
+    <script src="js/sketches/tunnelSketch.js" defer></script>
+    <script src="js/sketches/inductionSketch.js" defer></script>
     <script src="js/main.js" defer></script>
 </body>
 </html>

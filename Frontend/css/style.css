@@ -1,11 +1,11 @@
-/* Colours and sizes used across the whole site. Change them here. */
+/* Colours and sizes used across the whole site. */
 :root {
     /* Backgrounds, black. */
     --bg: #000000;
     --surface: #0d0d0d;
     --border: #2a2a2a;
 
-    /* Text colours, bright enough to read on the dark backgrounds. */
+    /* Text colours. */
     --text: #f5f5f5;
     --text-muted: #a8a8a8;
 
@@ -13,6 +13,9 @@
     --pastel-blue: #8ab4ff;
     --pastel-purple: #c3a6ff;
     --pastel-red: #ff8a9b;
+
+    /* Opacity of the background images. */
+    --art-opacity: 0.25;
 
     --radius: 0;
     --gap: 1.25rem;
@@ -28,7 +31,7 @@ html { scroll-behavior: smooth; }
 body {
     margin: 0;
     min-height: 100vh;
-    /* Flexbox column keeps the footer at the bottom of the screen. */
+    /* Flexbox column. */
     display: flex;
     flex-direction: column;
     font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -58,13 +61,14 @@ a { color: var(--pastel-blue); text-decoration: none; }
     font-size: 0.9rem;
 }
 
-/* Only the page with the active class is shown, main.js switches it. */
-.page { display: none; }
+/* Only the page with the active class is shown. */
+.page { display: none; scroll-margin-top: calc(var(--nav-height) + 2rem); }
 .page.active { display: block; }
 
-#nbody .placeholder-box { border-color: var(--pastel-red); }
-#tunneling .placeholder-box { border-color: var(--pastel-blue); }
-#induction .placeholder-box { border-color: var(--pastel-purple); }
+/* Each topic page has its own colour, red, blue, and purple. */
+#nbody { --topic: var(--pastel-red); }
+#tunneling { --topic: var(--pastel-blue); }
+#induction { --topic: var(--pastel-purple); }
 
 /* Navigation bar */
 .site-header {
@@ -103,24 +107,34 @@ a { color: var(--pastel-blue); text-decoration: none; }
 }
 
 .navbar__links a {
+    position: relative;
     display: block;
     padding: 0.5rem 0.9rem;
-    border-bottom: 2px solid transparent;
     color: var(--text-muted);
-    transition: color 0.2s ease, border-color 0.2s ease;
+    transition: color 0.2s ease;
+}
+
+/* Underline that slides in from the left on hover. */
+.navbar__links a::after {
+    content: "";
+    position: absolute;
+    left: 0.9rem;
+    right: 0.9rem;
+    bottom: 0.15rem;
+    height: 2px;
+    background: var(--pastel-purple);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
 }
 
 /* Purple when hovering over a link. */
-.navbar__links a:hover {
-    color: var(--pastel-purple);
-    border-color: var(--pastel-purple);
-}
+.navbar__links a:hover { color: var(--pastel-purple); }
+.navbar__links a:hover::after { transform: scaleX(1); }
 
 /* Blue on the current page. */
-.navbar__links a.active {
-    color: var(--pastel-blue);
-    border-color: var(--pastel-blue);
-}
+.navbar__links a.active { color: var(--pastel-blue); }
+.navbar__links a.active::after { background: var(--pastel-blue); transform: scaleX(1); }
 
 /* Hamburger button is hidden on large screens. */
 .navbar__toggle {
@@ -151,12 +165,12 @@ a { color: var(--pastel-blue); text-decoration: none; }
 .word-purple { color: var(--pastel-purple); }
 .word-blue { color: var(--pastel-blue); }
 
-/* Long paragraph is left aligned and has a maximum width so it is easy to read. */
+/* Left aligned paragraph with a maximum width. */
 .hero p {
     max-width: 70ch;
     margin: 1.5rem auto 0;
     text-align: left;
-    color: var(--text-muted);
+    color: #d4d4d4;
     font-size: 1.15rem;
 }
 
@@ -190,15 +204,104 @@ a { color: var(--pastel-blue); text-decoration: none; }
 /* Card border changes to its colour when hovering over it. */
 .card:hover { border-color: var(--c); }
 
-/* Empty box shown on the topic pages until the content is built. */
-.placeholder-box {
-    margin: 1.5rem 0;
-    padding: 4rem 1rem;
-    text-align: center;
-    color: var(--text-muted);
-    background: var(--surface);
-    border: 2px solid var(--pastel-purple);
+/* Simulation part of a topic page, pinned while the text scrolls over it. */
+.sim-pin {
+    position: sticky;
+    top: var(--nav-height);
+    z-index: 1;
+    /* Fills the screen height. */
+    min-height: calc(100vh - var(--nav-height) - 2rem);
+    background: var(--bg);
+    padding-bottom: 1.5rem;
 }
+
+.sim-pin h1 {
+    color: var(--topic);
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    margin-bottom: 0.5rem;
+}
+
+.tagline { color: var(--text-muted); max-width: 70ch; margin: 0 0 1.25rem; }
+
+/* Canvas on the left, controls on the right, they stack when the screen is narrow. */
+.sim-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap);
+    align-items: flex-start;
+}
+
+.sim-canvas {
+    flex: 2 1 340px;
+    min-width: 0;
+    border: 2px solid var(--topic);
+    line-height: 0;
+}
+.sim-canvas canvas { display: block; max-width: 100%; }
+
+.sim-controls {
+    flex: 1 1 240px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+.sim-controls label { color: var(--text-muted); }
+.sim-controls input[type="range"] { width: 100%; margin: 0; accent-color: var(--topic); }
+
+.check { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+.check input { width: 1.1rem; height: 1.1rem; accent-color: var(--topic); }
+
+.button-row { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+/* Small boxes for numbers and messages next to the simulation. */
+.readout {
+    margin: 0;
+    padding: 0.6rem 0.8rem;
+    background: var(--surface);
+    border-left: 3px solid var(--topic);
+}
+.readout p { margin: 0; }
+
+/* Text under the simulation, scrolls up over it. */
+.story {
+    position: relative;
+    z-index: 2;
+    background: var(--bg);
+    border-top: 2px solid var(--topic);
+    padding: 2.5rem 0 3rem;
+}
+.story > * { max-width: 70ch; }
+
+.story h2 {
+    color: var(--topic);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    margin: 2.5rem 0 0.75rem;
+}
+.story h2:first-child { margin-top: 0; }
+
+.story p, .story li { color: var(--text); font-size: 1.05rem; line-height: 1.75; }
+.story ul { padding-left: 1.4rem; }
+.story .warning { color: var(--text-muted); font-style: italic; }
+
+/* Equations and fractions. */
+.equation {
+    font-family: "Cambria Math", "STIX Two Math", Georgia, serif;
+    font-size: 1.25rem;
+    padding: 0.75rem 1rem;
+    background: var(--surface);
+    border-left: 3px solid var(--topic);
+    overflow-x: auto;
+}
+.frac {
+    display: inline-flex;
+    flex-direction: column;
+    vertical-align: middle;
+    text-align: center;
+    margin: 0 0.2rem;
+    font-size: 0.95em;
+}
+.frac > span { padding: 0 0.25rem; }
+.frac > span:first-child { border-bottom: 1px solid currentColor; }
 
 /* Buttons have a pastel outline that fills in when hovering. */
 .btn {
@@ -212,29 +315,121 @@ a { color: var(--pastel-blue); text-decoration: none; }
     font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
 }
 /* Buttons inside a card use the colour of that card. */
 .card .btn { --c: inherit; }
 
+/* Fills in and lifts up a little on hover, then presses down when clicked. */
 .btn:hover {
     background: var(--c);
     color: var(--bg);
+    transform: translateY(-2px);
 }
+.btn:active { transform: translateY(1px); }
 
 .btn--ghost { --c: var(--pastel-purple); }
 
-/* Clear outline when using the keyboard to move around. */
-.btn:focus-visible, .navbar__links a:focus-visible, .navbar__toggle:focus-visible {
+/* On topic pages buttons use the colour of the topic, and the quiet ones are grey. */
+.page .btn { --c: var(--topic); }
+.page .btn--ghost { --c: var(--text-muted); }
+
+/* Sliders, the handle grows on hover or drag. */
+.sim-controls input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 20px;
+    background: transparent;
+    cursor: pointer;
+}
+.sim-controls input[type="range"]::-webkit-slider-runnable-track { height: 4px; background: var(--border); }
+.sim-controls input[type="range"]::-moz-range-track { height: 4px; background: var(--border); }
+.sim-controls input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    margin-top: -6px;
+    border-radius: 50%;
+    background: var(--topic);
+    transition: transform 0.15s ease;
+}
+.sim-controls input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--topic);
+    transition: transform 0.15s ease;
+}
+.sim-controls input[type="range"]:hover::-webkit-slider-thumb,
+.sim-controls input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.35); }
+.sim-controls input[type="range"]:hover::-moz-range-thumb,
+.sim-controls input[type="range"]:active::-moz-range-thumb { transform: scale(1.35); }
+
+/* Tick boxes, their text lights up and the box grows a little on hover. */
+.check { transition: color 0.2s ease; }
+.check:hover { color: var(--text); }
+.check input { transition: transform 0.15s ease; }
+.check:hover input { transform: scale(1.15); }
+
+/* Number boxes and equations, the coloured edge gets thicker on hover. */
+.readout, .equation { transition: box-shadow 0.2s ease; }
+.readout:hover, .equation:hover { box-shadow: inset 3px 0 0 var(--topic); }
+
+/* Outline when using the keyboard. */
+.btn:focus-visible, .navbar__links a:focus-visible, .navbar__toggle:focus-visible,
+.sim-controls input:focus-visible {
     outline: 3px solid var(--pastel-blue);
     outline-offset: 3px;
 }
+
+/* Background images. */
+/* Home page has all four, fixed behind the text in the corners. */
+#home { isolation: isolate; }
+#home::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: var(--art-opacity);
+    background-image: url("../images/atom.png"), url("../images/em-wave.png"), url("../images/thermometer.png"), url("../images/coil.png");
+    background-repeat: no-repeat;
+    background-position: left -5% top 12%, right -7% top 8%, left 3% bottom 2%, right 3% bottom 3%;
+    background-size: min(26vw, 300px), min(36vw, 440px), min(18vw, 220px), min(24vw, 280px);
+}
+
+/* On phones the images are smaller. */
+@media (max-width: 700px) {
+    #home::before {
+        background-position: left -14% top 8%, right -22% top 22%, left 2% bottom 1%, right -4% bottom 1%;
+        background-size: 38vw, 58vw, 22vw, 30vw;
+    }
+}
+
+/* Each topic has one image behind its text, on the right side. */
+.story { isolation: isolate; }
+.story::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: var(--art-opacity);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: calc(100% - max(1rem, (100vw - 1068px) / 2)) 7rem;
+    background-size: min(40vw, 440px);
+}
+#nbody .story::before { background-image: url("../images/atom.png"); }
+#tunneling .story::before { background-image: url("../images/em-wave.png"); }
+#induction .story::before { background-image: url("../images/coil.png"); }
 
 /* Small screens, under 700px wide. */
 @media (max-width: 700px) {
     .navbar__toggle { display: flex; }
 
-    /* Links hide in a dropdown that main.js opens by adding the open class. */
+    /* Links hide in a dropdown, opened by the open class. */
     .navbar__links {
         display: none;
         flex-direction: column;
@@ -244,8 +439,15 @@ a { color: var(--pastel-blue); text-decoration: none; }
     .navbar__links.open { display: flex; }
 }
 
-/* Turns off the movement for people who prefer less animation. */
+/* Small or short screens, the simulation is not pinned. */
+@media (max-width: 900px), (max-height: 640px) {
+    .sim-pin { position: static; min-height: 0; }
+}
+
+/* Turns off the movement for reduced motion. */
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    .card, .btn, .navbar__links a { transition: none; }
+    .card, .btn, .navbar__links a, .navbar__links a::after, .check, .check input,
+    .readout, .equation, input[type="range"]::-webkit-slider-thumb { transition: none; }
+    .btn:hover { transform: none; }
 }

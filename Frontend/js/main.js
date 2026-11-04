@@ -1,5 +1,5 @@
-//Only navigation and buttons for now, simulations get added later.
-//Modules: Navigation, Router.
+//Navigation and page switching, plus starting and pausing each simulation.
+//Modules: Navigation, Router. The simulations themselves are in js/sketches, the physics is in js/physics.
 "use strict";
 
 //Shortcut to get one element by its id.
@@ -12,18 +12,18 @@ const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 //Hamburger menu on small screens + highlighting the current link.
 const Navigation = {
     init() {
-        //Saved here so the other functions can use them.
+        //Elements used by the other functions.
         this.toggle = $("nav-toggle");
         this.links = $("nav-links");
 
         //Hamburger opens/closes the menu.
         this.toggle.addEventListener("click", () => {
             const open = this.links.classList.toggle("open");
-            //Screen readers use this to know if the menu is open.
+            //Update aria-expanded.
             this.toggle.setAttribute("aria-expanded", String(open));
         });
 
-        //Menu closes after picking a link, otherwise it covers the page on phones.
+        //Menu closes after picking a link.
         this.links.addEventListener("click", (e) => {
             if (e.target.closest("a")) this.close();
         });
@@ -44,14 +44,22 @@ const Navigation = {
     }
 };
 
+//Simulations
+//Page id and the simulation that belongs to it, each one is made in js/sketches.
+const simulations = {
+    nbody: NBodySim,
+    tunneling: TunnelSim,
+    induction: InductionSim
+};
+
 //Router
-//Shows one page at a time using the URL hash, so no page reload.
+//Shows one page at a time using the URL hash.
 const Router = {
     //Page shown if the hash is empty or not a real page.
     defaultPage: "home",
 
     init() {
-        //Hash changes (link click, back button) so show that page.
+        //Show the page when the hash changes.
         window.addEventListener("hashchange", () => this.show(this.current()));
 
         //Anything with data-goto="pageId" jumps to that page (like the back buttons).
@@ -75,6 +83,12 @@ const Router = {
         $$(".page").forEach((p) => p.classList.toggle("active", p.id === pageId));
         Navigation.setActive(pageId);
 
+        //Start the simulation of the chosen page and stop the others.
+        for (const id in simulations) {
+            if (id === pageId) simulations[id].start();
+            else simulations[id].stop();
+        }
+
         //Every page starts at the top.
         window.scrollTo(0, 0);
     }
@@ -85,11 +99,12 @@ const Router = {
 document.addEventListener("DOMContentLoaded", () => {
     Navigation.init();
 
-    //Router is last so all the pages exist before the first one shows.
+    //Router starts last.
     Router.init();
 });
 
 //Assumptions for this setup:
 //Pages switch with the URL hash, no server or reload needed.
-//No simulations yet, topic pages are placeholders.
-//No external libraries, ads, or tracking.
+//A simulation only runs while its page is showing.
+//p5.js is a local file (js/p5.min.js).
+//No ads or tracking.
