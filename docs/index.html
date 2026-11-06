@@ -52,7 +52,7 @@
             <!-- Simulation stays pinned while the text scrolls over it. -->
             <div class="sim-pin">
                 <h1 id="nbody-title">N-Body Simulation</h1>
-                <p class="tagline">The age old problem of having more than 2 celestial bodies result in a chaotic mess simply because gravity says so</p>
+                <p class="tagline">The age old problem of having more than 2 celestial bodies result in a chaotic mess simply because gravity says so.</p>
 
                 <div class="sim-layout">
                     <!-- p5.js puts the canvas in here. -->
@@ -62,16 +62,24 @@
                         <div class="button-row">
                             <button class="btn" id="nbody-play">Play</button>
                             <button class="btn btn--ghost" id="nbody-reset">Reset</button>
+                            <button class="btn btn--ghost" id="nbody-figure8">Figure-8</button>
                         </div>
 
                         <label for="nbody-count">Number of bodies: <output id="nbody-count-out">3</output></label>
                         <input type="range" id="nbody-count" min="2" max="5" step="1" value="3">
 
-                        <label for="nbody-mass">Mass: <output id="nbody-mass-out">1.0</output></label>
-                        <input type="range" id="nbody-mass" min="0.5" max="3" step="0.1" value="1">
+                        <!-- The sketch puts one mass slider and one radius slider here for every body. -->
+                        <label id="nbody-masses-label">Mass of each body</label>
+                        <div class="mass-list" id="nbody-masses" aria-labelledby="nbody-masses-label"></div>
 
-                        <label for="nbody-speed">Speed: <output id="nbody-speed-out">2</output></label>
-                        <input type="range" id="nbody-speed" min="1" max="10" step="1" value="2">
+                        <label id="nbody-radii-label">Radius of each body</label>
+                        <div class="mass-list" id="nbody-radii" aria-labelledby="nbody-radii-label"></div>
+
+                        <label for="nbody-speed">Speed: <output id="nbody-speed-out">4</output></label>
+                        <input type="range" id="nbody-speed" min="1" max="16" step="1" value="4">
+
+                        <label for="nbody-zoom">Zoom: <output id="nbody-zoom-out">1.00</output>×</label>
+                        <input type="range" id="nbody-zoom" min="0.2" max="3" step="0.05" value="1">
 
                         <label class="check"><input type="checkbox" id="nbody-trails" checked> Show trails</label>
                         <label class="check"><input type="checkbox" id="nbody-energy"> Show energy</label>
@@ -144,7 +152,17 @@
                         <label for="tunnel-width">Barrier width (L): <output id="tunnel-width-out">1.0</output></label>
                         <input type="range" id="tunnel-width" min="0.1" max="3" step="0.1" value="1">
 
-                        <p class="readout" id="tunnel-result">T = 0.0000, R = 0.0000</p>
+                        <label for="tunnel-speed">Speed: <output id="tunnel-speed-out">1.0</output>×</label>
+                        <input type="range" id="tunnel-speed" min="0.2" max="2.5" step="0.1" value="1">
+
+                        <!-- T and R as percentages, with a bar for each. -->
+                        <div class="readout">
+                            <p>Goes through (T): <span id="tunnel-t-value">--</span></p>
+                            <div class="bar"><div class="fill" id="tunnel-t-fill"></div></div>
+                            <p>Bounces back (R): <span id="tunnel-r-value">--</span></p>
+                            <div class="bar"><div class="fill fill--alt" id="tunnel-r-fill"></div></div>
+                            <p id="tunnel-regime"></p>
+                        </div>
 
                         <div class="button-row">
                             <button class="btn" id="tunnel-fire">Fire particle</button>
@@ -218,10 +236,20 @@
                         <label for="induction-turns">Coil turns (N): <output id="induction-turns-out">4</output></label>
                         <input type="range" id="induction-turns" min="1" max="10" step="1" value="4">
 
+                        <label for="induction-speed">Speed: <output id="induction-speed-out">1.0</output>×</label>
+                        <input type="range" id="induction-speed" min="0.2" max="3" step="0.1" value="1">
+
                         <label class="check"><input type="checkbox" id="induction-graph"> Show EMF graph</label>
 
                         <!-- Only visible when Show EMF graph is ticked. -->
                         <p class="readout" id="induction-graph-note" hidden>This is a graph that shows the Electricity that is being generated as time passes</p>
+
+                        <!-- Key for the squares on the coils. -->
+                        <div class="readout">
+                            <p><span class="key-box key-n">N</span> north pole at that coil</p>
+                            <p><span class="key-box key-s">S</span> south pole at that coil</p>
+                            <p>Coils: <span class="word-red">A</span>, <span class="word-blue">B</span>, <span class="word-purple">C</span>. Tap a coil to highlight it.</p>
+                        </div>
 
                         <div class="readout">
                             <p>Phase A EMF: <span id="induction-a">0.00</span></p>
@@ -287,10 +315,10 @@
     <script src="js/physics/NBody.js" defer></script>
     <script src="js/physics/QTunnel.js" defer></script>
     <script src="js/physics/EInduction.js" defer></script>
-    <script src="js/sketches/shared.js" defer></script>
-    <script src="js/sketches/nbodySketch.js" defer></script>
-    <script src="js/sketches/tunnelSketch.js" defer></script>
-    <script src="js/sketches/inductionSketch.js" defer></script>
+    <script src="js/sketches/Shared.js" defer></script>
+    <script src="js/sketches/Nbodysketch.js" defer></script>
+    <script src="js/sketches/Tunnelsketch.js" defer></script>
+    <script src="js/sketches/Inductionsketch.js" defer></script>
     <script src="js/main.js" defer></script>
 </body>
 </html>

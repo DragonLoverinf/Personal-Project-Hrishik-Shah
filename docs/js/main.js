@@ -103,8 +103,3 @@ document.addEventListener("DOMContentLoaded", () => {
     Router.init();
 });
 
-//Assumptions for this setup:
-//Pages switch with the URL hash, no server or reload needed.
-//A simulation only runs while its page is showing.
-//p5.js is a local file (js/p5.min.js).
-//No ads or tracking.
